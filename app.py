@@ -39,7 +39,7 @@ st.sidebar.header("2. Настройки алгоритма")
 algo_type = st.sidebar.radio("Метод разделения:", ["Строгий GSK", "Мягкий GSK"])
 
 mu_val = None
-if algo_type == "Мягкий GSK (с усечением)":
+if algo_type == "Мягкий GSK":
     mu_val = st.sidebar.slider("Параметр усечения (mu)", min_value=0.01, max_value=1.0, value=0.1, step=0.01,
                                help="Чем меньше mu, тем сильнее штраф и уже выпуклая оболочка.")
 
