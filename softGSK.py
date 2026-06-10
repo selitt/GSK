@@ -11,7 +11,7 @@ class SoftGSK:
         self.beta = None
         self.u = None
 
-    def distribution(self, projections, с, reverse=False):
+    def distribution(self, projections, c, reverse=False):
         n_points = len(projections)
         h = np.zeros(n_points)
         if reverse:new_proj = np.argsort(projections)[::-1]
@@ -19,14 +19,14 @@ class SoftGSK:
         full = 1.0
         for idx in new_proj:
             if full <= 1e-12: break
-            give = min(с, full)
+            give = min(c, full)
             h[idx] = give
             full -= give
         return h
 
-    def fit(self, с, max_iter=1000, tol=1e-6):
-        min_с = max(1.0 / self.s, 1.0 / self.m_minus_s)
-        if с < min_с: raise ValueError(f'Параметр C должен быть >= {min_с:.4f}')
+    def fit(self, c, max_iter=1000, tol=1e-6):
+        min_c = max(1.0 / self.s, 1.0 / self.m_minus_s)
+        if c < min_с: raise ValueError(f'Параметр C должен быть >= {min_c:.4f}')
         u = np.zeros(self.m)
         u[:self.s] = 1.0 / self.s
         u[self.s:] = 1.0 / self.m_minus_s
@@ -34,8 +34,8 @@ class SoftGSK:
         for k in range(max_iter):
             wp1 = np.dot(self.P1, w)
             wp2 = np.dot(self.P2, w)
-            h1 = self.distribution(wp1, с, reverse=False)
-            h2 = self.distribution(wp2, с, reverse=True)
+            h1 = self.distribution(wp1, c, reverse=False)
+            h2 = self.distribution(wp2, c, reverse=True)
             h = np.concatenate([h1, h2])
             w_h1 = np.sum(self.P1 * h1[:, np.newaxis], axis=0)
             w_h2 = np.sum(self.P2 * h2[:, np.newaxis], axis=0)
