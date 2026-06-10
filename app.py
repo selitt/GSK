@@ -49,7 +49,7 @@ if X is not None and y is not None:
             w, beta = model.fit(max_iter=max_iter)
         else:
             model = SoftGSK(P1, P2)
-            w, beta = model.fit(с=mu_val, max_iter=max_iter)
+            w, beta = model.fit(c=mu_val, max_iter=max_iter)
 
         elapsed_time = time.time() - start_time
         w_norm = np.linalg.norm(w)
