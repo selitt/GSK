@@ -26,7 +26,7 @@ class SoftGSK:
 
     def fit(self, c, max_iter=1000, tol=1e-6):
         min_c = max(1.0 / self.s, 1.0 / self.m_minus_s)
-        if c < min_с: raise ValueError(f'Параметр C должен быть >= {min_c:.4f}')
+        if c < min_c: raise ValueError(f'Параметр C должен быть >= {min_c:.4f}')
         u = np.zeros(self.m)
         u[:self.s] = 1.0 / self.s
         u[self.s:] = 1.0 / self.m_minus_s
