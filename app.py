@@ -4,7 +4,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import time
 from sklearn.datasets import make_blobs, make_moons
-from main import Gradient
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from main import commonGSK
 from softGSK import SoftGSK
 st.set_page_config(page_title = 'GSK', layout = 'wide')
 st.title('Визуализатор GSK')
@@ -33,7 +34,7 @@ else:
 st.sidebar.header('2. Выбор алгоритма')
 algo_type = st.sidebar.radio('Метод разделения:', ['Строгий GSK', 'Мягкий GSK'])
 mu_val = None
-if algo_type == 'Мягкий GSK': mu_val = st.sidebar.slider('Штрафной параметр (C)', min_value=0.01, max_value=1.0, value=0.1, step=0.01, help = 'Чем меньше C, тем сильнее штраф.')
+if algo_type == 'Мягкий GSK': mu_val = st.sidebar.slider('Штрафной параметр (mu)', min_value=0.01, max_value=1.0, value=0.1, step=0.01, help = 'Чем меньше C, тем сильнее штраф.')
 max_iter = st.sidebar.number_input('Максимум итераций:', min_value=100, max_value=10000, value=1000, step=100)
 if X is not None and y is not None:
     classes = np.unique(y)
@@ -45,11 +46,11 @@ if X is not None and y is not None:
     success = True
     try:
         if algo_type == 'Строгий GSK':
-            model = Gradient(P1, P2)
+            model = commonGSK(P1, P2)
             w, beta = model.fit(max_iter=max_iter)
         else:
             model = SoftGSK(P1, P2)
-            w, beta = model.fit(c=mu_val, max_iter=max_iter)
+            w, beta = model.fit(mu=mu_val, max_iter=max_iter)
 
         elapsed_time = time.time() - start_time
         w_norm = np.linalg.norm(w)
@@ -60,11 +61,23 @@ if X is not None and y is not None:
     st.subheader('Результаты оптимизации')
     col1, col2, col3, col4 = st.columns(4)
     if success:
-        margin_width = 2.0 / w_norm if w_norm > 1e-5 else 0
-        col1.metric('Время выполнения', f'{elapsed_time * 1000:.1f} мс')
-        col2.metric('Длина вектора ||w||', f'{w_norm:.4f}')
-        col3.metric('Сдвиг (Beta)', f'{beta:.4f}')
-        col4.metric('Ширина полосы', f'{margin_width:.4f}')
+        y_true = np.concatenate([np.ones(len(P1)), -np.ones(len(P2))])
+        X = np.vstack([P1, P2])
+        projections = np.dot(X, w) + beta
+        y_pred = np.sign(projections)
+        y_pred[y_pred == 0] = 1
+        acc = accuracy_score(y_true, y_pred)
+        prec = precision_score(y_true, y_pred)
+        rec = recall_score(y_true, y_pred)
+        f1 = f1_score(y_true, y_pred)
+        st.markdown('Метрики')
+        col1, col2, col3, col4 = st.columns(4)
+
+        with col1: st.metric(label='Accuracy', value=f'{acc:.3f}')
+        with col2: st.metric(label='Precision', value=f'{prec:.3f}')
+        with col3: st.metric(label='Recall', value=f'{rec:.3f}')
+        with col4: st.metric(label='F1-score', value=f'{f1:.3f}')
+
     else: st.warning('Алгоритм выродился: множества линейно неразделимы в строгой постановке. Переключитесь на "Мягкий GSK".')
     st.subheader('Визуализация разделяющей прямой')
     fig, ax = plt.subplots(figsize=(10, 6))
