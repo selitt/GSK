@@ -81,8 +81,8 @@ if X is not None and y is not None:
     else: st.warning('Алгоритм выродился: множества линейно неразделимы в строгой постановке. Переключитесь на "Мягкий GSK".')
     st.subheader('Визуализация разделяющей прямой')
     fig, ax = plt.subplots(figsize=(10, 6))
-    ax.scatter(P1[:, 0], P1[:, 1], color='royalblue', edgecolors='k', s=60, label=f'Множество 1 ({len(P1)} точек)')
-    ax.scatter(P2[:, 0], P2[:, 1], color='crimson', edgecolors='k', s=60, label=f'Множество 2 ({len(P2)} точек)')
+    ax.scatter(P1[:, 0], P1[:, 1], color='royalblue', edgecolors='k', s=60, label=f'P1')
+    ax.scatter(P2[:, 0], P2[:, 1], color='crimson', edgecolors='k', s=60, label=f'P2')
     if success and w is not None:
         xlim = ax.get_xlim()
         ylim = ax.get_ylim()
@@ -91,8 +91,6 @@ if X is not None and y is not None:
             y_vals = -(w[0] * x_vals + beta) / w[1]
             ax.plot(x_vals, y_vals, 'k--', linewidth=2.5, label='Разделяющая прямая')
             margin = 1 / w[1]
-            ax.plot(x_vals, y_vals + margin, 'k:', alpha=0.5, label='Граница полосы P1')
-            ax.plot(x_vals, y_vals - margin, 'k:', alpha=0.5, label='Граница полосы P2')
         else:
             x_val = -beta / w[0]
             ax.axvline(x=x_val, color='k', linestyle='--', linewidth=2.5)
