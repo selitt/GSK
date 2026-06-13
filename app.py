@@ -16,15 +16,15 @@ X, y = None, None
 if data_source == 'Тесты':
     dataset_type = st.sidebar.selectbox('Выберите тест:',['Идеально разделимые', 'Пересекающиеся', 'С выбросом', 'Полумесяцы'])
     if dataset_type == 'Идеально разделимые':
-        X, y = make_blobs(n_samples=700, centers=[[2, 2], [8, 8]], cluster_std=1.0, random_state=42)
+        X, y = make_blobs(n_samples=200, centers=[[2, 2], [8, 8]], cluster_std=1.0, random_state=42)
     elif dataset_type == 'Пересекающиеся':
-        X, y = make_blobs(n_samples=700, centers=[[4, 4], [5, 5]], cluster_std=1.5, random_state=42)
+        X, y = make_blobs(n_samples=200, centers=[[4, 4], [5, 5]], cluster_std=1.5, random_state=42)
     elif dataset_type == 'С выбросом':
-        X, y = make_blobs(n_samples=700, centers=[[2, 2], [8, 8]], cluster_std=1.0, random_state=42)
+        X, y = make_blobs(n_samples=200, centers=[[2, 2], [8, 8]], cluster_std=1.0, random_state=42)
         X = np.vstack([X, [7.5, 7.5]])
         y = np.append(y, 0)
     elif dataset_type == 'Полумесяцы':
-        X, y = make_moons(n_samples=700, noise=0.1, random_state=42)
+        X, y = make_moons(n_samples=200, noise=0.1, random_state=42)
 else:
     uploaded_file = st.sidebar.file_uploader('Загрузите CSV (колонки: x1, x2, label)', type=['csv'])
     if uploaded_file is not None:
