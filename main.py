@@ -1,6 +1,6 @@
 import numpy as np
 
-class Gradient:
+class commonGSK:
     def __init__(self, P1, P2):
         self.P1 = np.array(P1, dtype=float)
         self.P2 = np.array(P2, dtype=float)
@@ -17,10 +17,8 @@ class Gradient:
         u[self.s:] = 1.0 / self.m_minus_s
         w = np.sum(self.P1 * u[:self.s, np.newaxis], axis=0) - np.sum(self.P2 * u[self.s:, np.newaxis], axis=0)
         for k in range(max_iter):
-            wp1 = np.dot(self.P1, w)
-            wp2 = np.dot(self.P2, w)
-            i_first = np.argmin(wp1)
-            i_second = np.argmax(wp2)
+            i_first = np.argmin(np.dot(self.P1, w))
+            i_second = np.argmax(np.dot(self.P2, w))
             p_first = self.P1[i_first]
             p_second = self.P2[i_second]
             delta_u = np.dot(w, w) - np.dot(w, p_first - p_second)
