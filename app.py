@@ -16,21 +16,25 @@ X, y = None, None
 if data_source == 'Тесты':
     dataset_type = st.sidebar.selectbox('Выберите тест:',['Идеально разделимые', 'Пересекающиеся', 'С выбросом', 'Полумесяцы'])
     if dataset_type == 'Идеально разделимые':
-        X, y = make_blobs(n_samples=200, centers=[[2, 2], [8, 8]], cluster_std=1.0, random_state=42)
+        X, y = make_blobs(n_samples=150, centers=[[2, 2], [8, 8]], cluster_std=1.0, random_state=42)
     elif dataset_type == 'Пересекающиеся':
-        X, y = make_blobs(n_samples=200, centers=[[4, 4], [5, 5]], cluster_std=1.5, random_state=42)
+        X, y = make_blobs(n_samples=150, centers=[[4, 4], [5, 5]], cluster_std=1.5, random_state=42)
     elif dataset_type == 'С выбросом':
-        X, y = make_blobs(n_samples=200, centers=[[2, 2], [8, 8]], cluster_std=1.0, random_state=42)
+        X, y = make_blobs(n_samples=150, centers=[[2, 2], [8, 8]], cluster_std=1.0, random_state=42)
         X = np.vstack([X, [7.5, 7.5]])
         y = np.append(y, 0)
     elif dataset_type == 'Полумесяцы':
-        X, y = make_moons(n_samples=200, noise=0.1, random_state=42)
+        X, y = make_moons(n_samples=150, noise=0.1, random_state=42)
 else:
     uploaded_file = st.sidebar.file_uploader('Загрузите CSV (колонки: x1, x2, label)', type=['csv'])
     if uploaded_file is not None:
-        df = pd.read_csv(uploaded_file)
-        X = df.iloc[:, :-1].values
-        y = df.iloc[:, -1].values
+        df = pd.read_csv(uploaded_file, header=None)
+        data = df.values
+        X = data[:, :-1]
+        y = data[:, -1]
+        P1 = X[y == 0]
+        P2 = X[y == 1]
+        st.write("Данные загружены! Размер P1:", P1.shape, "Размер P2:", P2.shape)
 st.sidebar.header('2. Выбор алгоритма')
 algo_type = st.sidebar.radio('Метод разделения:', ['Строгий GSK', 'Мягкий GSK'])
 mu_val = None
@@ -81,8 +85,8 @@ if X is not None and y is not None:
     else: st.warning('Алгоритм выродился: множества линейно неразделимы в строгой постановке. Переключитесь на "Мягкий GSK".')
     st.subheader('Визуализация разделяющей прямой')
     fig, ax = plt.subplots(figsize=(10, 6))
-    ax.scatter(P1[:, 0], P1[:, 1], color='royalblue', edgecolors='k', s=60, label=f'P1')
-    ax.scatter(P2[:, 0], P2[:, 1], color='crimson', edgecolors='k', s=60, label=f'P2')
+    ax.scatter(P1[:, 0], P1[:, 1], color='royalblue', edgecolors='k', s=60, label=f'Множество 1 ({len(P1)} точек)')
+    ax.scatter(P2[:, 0], P2[:, 1], color='crimson', edgecolors='k', s=60, label=f'Множество 2 ({len(P2)} точек)')
     if success and w is not None:
         xlim = ax.get_xlim()
         ylim = ax.get_ylim()
@@ -91,6 +95,8 @@ if X is not None and y is not None:
             y_vals = -(w[0] * x_vals + beta) / w[1]
             ax.plot(x_vals, y_vals, 'k--', linewidth=2.5, label='Разделяющая прямая')
             margin = 1 / w[1]
+            ax.plot(x_vals, y_vals + margin, 'k:', alpha=0.5, label='Граница полосы P1')
+            ax.plot(x_vals, y_vals - margin, 'k:', alpha=0.5, label='Граница полосы P2')
         else:
             x_val = -beta / w[0]
             ax.axvline(x=x_val, color='k', linestyle='--', linewidth=2.5)
