@@ -30,8 +30,8 @@ else:
     if uploaded_file is not None:
         df = pd.read_csv(uploaded_file, header=None)
         data = df.values
+        X = data[:, :-1]
         y = data[:, -1]
-        X = data[:, [1, 5]]
         P1 = X[y == 0]
         P2 = X[y == 1]
         st.write("Данные загружены! Размер P1:", P1.shape, "Размер P2:", P2.shape)
