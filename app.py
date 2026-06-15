@@ -29,29 +29,29 @@ else:
     uploaded_file = st.sidebar.file_uploader('Загрузите CSV (колонки: x1, x2, label)', type=['csv'])
     if uploaded_file is not None:
     # 1. Читаем файл (pandas автоматически найдет заголовки, если они есть)
-    df = pd.read_csv(uploaded_file)
-    
-    # 2. Если это наш датасет с рекламой (проверяем по наличию колонок)
-    if 'Age' in df.columns and 'EstimatedSalary' in df.columns:
-        # Жестко забираем только два нужных числовых признака для 2D графика
-        X = df[['Age', 'EstimatedSalary']].values
-        # Забираем целевую переменную (купил/не купил)
-        y = df['Purchased'].values
-    else:
-        # Универсальная логика для других файлов без заголовков (типа банкнот)
-        data = df.values
-        X = data[:, :-1]
-        y = data[:, -1]
+        df = pd.read_csv(uploaded_file)
         
-    # 3. Нормализация данных (КРИТИЧЕСКИ ВАЖНО для реальных данных!)
-    # Чтобы зарплата в 100 000 не перевесила возраст в 30 лет
-    X = (X - X.mean(axis=0)) / X.std(axis=0)
-    
-    # 4. Формируем множества
-    P1 = X[y == 0]
-    P2 = X[y == 1]
-    
-    st.write(f"Данные загружены! Размер P1: {P1.shape} Размер P2: {P2.shape}")
+        # 2. Если это наш датасет с рекламой (проверяем по наличию колонок)
+        if 'Age' in df.columns and 'EstimatedSalary' in df.columns:
+            # Жестко забираем только два нужных числовых признака для 2D графика
+            X = df[['Age', 'EstimatedSalary']].values
+            # Забираем целевую переменную (купил/не купил)
+            y = df['Purchased'].values
+        else:
+            # Универсальная логика для других файлов без заголовков (типа банкнот)
+            data = df.values
+            X = data[:, :-1]
+            y = data[:, -1]
+            
+        # 3. Нормализация данных (КРИТИЧЕСКИ ВАЖНО для реальных данных!)
+        # Чтобы зарплата в 100 000 не перевесила возраст в 30 лет
+        X = (X - X.mean(axis=0)) / X.std(axis=0)
+        
+        # 4. Формируем множества
+        P1 = X[y == 0]
+        P2 = X[y == 1]
+        
+        st.write(f"Данные загружены! Размер P1: {P1.shape} Размер P2: {P2.shape}")
 st.sidebar.header('2. Выбор алгоритма')
 algo_type = st.sidebar.radio('Метод разделения:', ['Строгий GSK', 'Мягкий GSK'])
 mu_val = None
