@@ -26,9 +26,9 @@ if data_source == 'Тесты':
     elif dataset_type == 'Полумесяцы':
         X, y = make_moons(n_samples=150, noise=0.1, random_state=42)
 else:
-    uploaded_file = st.sidebar.file_uploader('Загрузите CSV (колонки: x1, x2, label)', type=['txt'])
+    uploaded_file = st.sidebar.file_uploader('Загрузите CSV (колонки: x1, x2, label)', type=['csv'])
     if uploaded_file is not None:
-        df = pd.read_csv(uploaded_file,sep=',', header=None)
+        df = pd.read_csv(uploaded_file, header=None)
         data = df.values
         X = data[:, :-1]
         y = data[:, -1]
