@@ -29,7 +29,7 @@ else:
     if uploaded_file is not None:
         df = pd.read_csv(uploaded_file, header=None)
         data = df.values
-        X = data[:, :-1].astype('float')
+        X = data[:, :-1]
         y = data[:, -1]
         P1 = X[y == 0]
         P2 = X[y == 1]
