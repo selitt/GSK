@@ -37,7 +37,7 @@ else:
 st.sidebar.header('2. Выбор алгоритма')
 algo_type = st.sidebar.radio('Метод разделения:', ['Строгий GSK', 'Мягкий GSK'])
 mu_val = None
-if algo_type == 'Мягкий GSK': mu_val = st.sidebar.slider('Штрафной параметр (mu)', min_value=0.01, max_value=1.0, value=0.1, step=0.01, help = 'Чем меньше C, тем сильнее штраф.')
+if algo_type == 'Мягкий GSK': mu_val = st.sidebar.slider('Штрафной параметр (μ)', min_value=0.01, max_value=1.0, value=0.1, step=0.01, help = 'Чем меньше μ, тем сильнее штраф.')
 max_iter = st.sidebar.number_input('Максимум итераций:', min_value=100, max_value=10000, value=1000, step=100)
 if X is not None and y is not None:
     classes = np.unique(y)
