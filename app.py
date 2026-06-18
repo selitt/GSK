@@ -53,7 +53,7 @@ if X is not None and y is not None:
             w, beta = model.fit(max_iter=max_iter)
         else:
             model = SoftGSK(P1, P2)
-            w, beta = model.fit(mu=mu_val, max_iter=max_iter)
+            w, beta = model.solve(mu=mu_val, max_iter=max_iter)
         elapsed_time = time.time() - start_time
         w_norm = np.linalg.norm(w)
         if w_norm < 1e-5: success = False
