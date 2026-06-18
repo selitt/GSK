@@ -9,7 +9,6 @@ from main import commonGSK
 from softGSK import SoftGSK
 st.set_page_config(page_title = 'GSK', layout = 'wide')
 st.title('Визуализатор GSK')
-st.markdown('Разделение конечных множеств с использованием строгого и мягкого методов GSK.')
 st.sidebar.header('1. Настройки данных')
 data_source = st.sidebar.radio('Источник данных:', ['Тесты', 'Загрузить CSV'])
 X, y = None, None
@@ -26,32 +25,15 @@ if data_source == 'Тесты':
     elif dataset_type == 'Полумесяцы':
         X, y = make_moons(n_samples=150, noise=0.1, random_state=42)
 else:
-    uploaded_file = st.sidebar.file_uploader('Загрузите CSV (колонки: x1, x2, label)', type=['csv'])
+    uploaded_file = st.sidebar.file_uploader('Загрузите CSV', type=['csv'])
     if uploaded_file is not None:
-    # 1. Читаем файл (pandas автоматически найдет заголовки, если они есть)
-        df = pd.read_csv(uploaded_file)
-        
-        # 2. Если это наш датасет с рекламой (проверяем по наличию колонок)
-        if 'Age' in df.columns and 'EstimatedSalary' in df.columns:
-            # Жестко забираем только два нужных числовых признака для 2D графика
-            X = df[['Age', 'EstimatedSalary']].values
-            # Забираем целевую переменную (купил/не купил)
-            y = df['Purchased'].values
-        else:
-            # Универсальная логика для других файлов без заголовков (типа банкнот)
-            data = df.values
-            X = data[:, :-1]
-            y = data[:, -1]
-            
-        # 3. Нормализация данных (КРИТИЧЕСКИ ВАЖНО для реальных данных!)
-        # Чтобы зарплата в 100 000 не перевесила возраст в 30 лет
-        X = (X - X.mean(axis=0)) / X.std(axis=0)
-        
-        # 4. Формируем множества
+        df = pd.read_csv(uploaded_file, header=None)
+        data = df.values
+        X = data[:, :-1]
+        y = data[:, -1]
         P1 = X[y == 0]
         P2 = X[y == 1]
-        
-        st.write(f"Данные загружены! Размер P1: {P1.shape} Размер P2: {P2.shape}")
+        st.write('Данные загружены!')
 st.sidebar.header('2. Выбор алгоритма')
 algo_type = st.sidebar.radio('Метод разделения:', ['Строгий GSK', 'Мягкий GSK'])
 mu_val = None
@@ -71,15 +53,14 @@ if X is not None and y is not None:
             w, beta = model.fit(max_iter=max_iter)
         else:
             model = SoftGSK(P1, P2)
-            w, beta = model.fit(mu=mu_val, max_iter=max_iter)
-
+            w, beta = model.solve(mu=mu_val, max_iter=max_iter)
         elapsed_time = time.time() - start_time
         w_norm = np.linalg.norm(w)
         if w_norm < 1e-5: success = False
     except Exception as e:
         success = False
         st.error(f'Ошибка выполнения: {e}')
-    st.subheader('Результаты оптимизации')
+    st.subheader('Метрики:')
     col1, col2, col3, col4 = st.columns(4)
     if success:
         y_true = np.concatenate([np.ones(len(P1)), -np.ones(len(P2))])
@@ -91,9 +72,7 @@ if X is not None and y is not None:
         prec = precision_score(y_true, y_pred)
         rec = recall_score(y_true, y_pred)
         f1 = f1_score(y_true, y_pred)
-        st.markdown('Метрики')
         col1, col2, col3, col4 = st.columns(4)
-
         with col1: st.metric(label='Accuracy', value=f'{acc:.3f}')
         with col2: st.metric(label='Precision', value=f'{prec:.3f}')
         with col3: st.metric(label='Recall', value=f'{rec:.3f}')
@@ -121,4 +100,4 @@ if X is not None and y is not None:
     ax.grid(True, alpha=0.3)
     st.pyplot(fig)
 else:
-    st.info("Пожалуйста, выберите набор данных в левом меню.")
+    st.info('Пожалуйста, выберите набор данных в левом меню.')
