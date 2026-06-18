@@ -11,7 +11,7 @@ class commonGSK:
         self.beta = None
         self.u = None
 
-    def fit(self, max_iter=1000, tol=1e-6):
+    def solve(self, max_iter=1000, tol=1e-6):
         u = np.zeros(self.m)
         u[:self.s] = 1.0 / self.s
         u[self.s:] = 1.0 / self.m_minus_s
