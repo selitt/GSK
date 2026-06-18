@@ -50,7 +50,7 @@ if X is not None and y is not None:
     try:
         if algo_type == 'Строгий GSK':
             model = commonGSK(P1, P2)
-            w, beta = model.fit(max_iter=max_iter)
+            w, beta = model.solve(max_iter=max_iter)
         else:
             model = SoftGSK(P1, P2)
             w, beta = model.solve(mu=mu_val, max_iter=max_iter)
