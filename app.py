@@ -27,13 +27,13 @@ if data_source == 'Тесты':
 else:
     uploaded_file = st.sidebar.file_uploader('Загрузите CSV', type=['csv'])
     if uploaded_file is not None:
-        df = pd.read_csv(uploaded_file, header=None)
-        data = df.values
-        X = data[:, :-1]
-        y = data[:, -1]
+        df = pd.read_csv(uploaded_file)
+        X = df.iloc[:, :-1].values.astype(float)
+        y = df.iloc[:, -1].values.astype(int)
+        X = (X - X.mean(axis=0)) / (X.std(axis=0) + 1e-8)
         P1 = X[y == 0]
         P2 = X[y == 1]
-        st.write('Данные загружены!')
+        st.success('Данные успешно загружены и очищены!')
 st.sidebar.header('2. Выбор алгоритма')
 algo_type = st.sidebar.radio('Метод разделения:', ['Строгий GSK', 'Мягкий GSK'])
 mu_val = None
